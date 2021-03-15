@@ -1,0 +1,54 @@
+{% extends "include/base.html" %}
+{% load user_filters %}
+{% block title %}
+    <title>
+        Войти на сайт
+    </title>
+{% endblock %}
+{% load static %}
+{% block css %}
+     <link rel="stylesheet" href="{% static 'pages/form.css' %}">
+{% endblock %}
+{% block header %}
+{% include "include/header.html" %}
+{% endblock %}
+{% block content %}
+<main class="main container">
+    <div class="main__header">
+        <h1 class="main__title">Войти на сайт</h1>
+    </div>
+    <div class="form-container">
+
+        <form class="form" method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="form__group">
+                <label for="{{ form.id_username }}" class="form__label">Имя</label>
+                <div class="form__field-group">
+                    {{ form.username|addclass:"form__input" }}
+                </div>
+            </div>
+            <div class="form__group">
+                <label for="{{ form.id_password  }}" class="form__label">Пароль</label>
+                <div class="form__field-group">
+                    {{ form.password|addclass:"form__input" }}
+                    {% if form.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <span class="form__error">
+                                Имя пользователя и пароль не совпадают. Введите правильные данные.
+                            </span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form__footer">
+                <button type="submit" class="button button_style_blue">Войти</button>
+                <a class="form__forgot-link">Забыли пароль?</a>
+            </div>
+        </form>
+    </div>
+
+
+</main>
+{% endblock content %}
+{% include "include/footer.html" %}
+

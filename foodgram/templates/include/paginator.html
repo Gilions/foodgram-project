@@ -1,0 +1,23 @@
+<ul class="pagination" aria-label="Search results pages">
+    <nav class="pagination" aria-label="Search results pages">
+        <ul class="pagination__container">
+            {% if items.has_previous %}
+                <li class="page-item"><a class="pagination__link link" href="?page={{ items.previous_page_number }}"><span class="icon-left"></span></a></li>
+            {% else %}
+                <li class="pagination__item"><a class="pagination__link link" href="#"><span class="icon-left"></span></a></li>
+            {% endif %}
+            {% for i in paginator.page_range %}
+                {% if items.number == i %}
+                    <li class="pagination__item pagination__item_active"><a class="pagination__link link" href="#">{{ i }}</a></li>
+                {% else %}
+                    <li class="pagination__item"><a class="pagination__link link" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if items.has_next %}
+                <li class="pagination__item"><a class="pagination__link link" href="?page={{ items.next_page_number }}"><span class="icon-right"></a></li>
+            {% else %}
+                <li class="pagination__item"><a class="pagination__link link" href="#"><span class="icon-right"></span></a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</ul>
