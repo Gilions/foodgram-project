@@ -6,4 +6,6 @@ admin.site.register(Recipe)
 admin.site.register(Components)
 admin.site.register(Amount)
 admin.site.register(Tag)
+admin.site.register(Follow)
+admin.site.register(Favorite)
 

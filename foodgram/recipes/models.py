@@ -1,5 +1,11 @@
+from datetime import datetime
+
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+
+from .utility import translate_rus_eng
 
 
 User = get_user_model()
@@ -30,6 +36,11 @@ class Tag(models.Model):
         verbose_name='Тег',
         help_text='Тег рецепта, максимум 20 символов',
     )
+    display_name = models.CharField(
+        max_length=50,
+        verbose_name='Название тега для HTML',
+        blank=True
+    )
     color = models.CharField(
         max_length=20,
         verbose_name='Цвет тега',
@@ -50,7 +61,7 @@ class Recipe(models.Model):
         )
     name = models.CharField(
         max_length=100,
-        verbose_name='Название',
+        verbose_name='Название рецепта',
         help_text='Максимальная длинна 100 символов',
         )
     image = models.ImageField(
@@ -85,30 +96,39 @@ class Recipe(models.Model):
         )
     tag = models.ManyToManyField(
         Tag,
-        verbose_name='Тег',
+        verbose_name='Теги',
         help_text='Тег рецепта',
     )
     slug = models.SlugField(
-        max_length=50,
+        max_length=500,
         unique=True,
+        blank=True,
         )
 
     class Meta:
-        ordering = ("-pub_date",)
+        ordering = ("-fav_counter", "-pub_date",)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = translate_rus_eng(self.name) + '_' + datetime.strftime(
+                timezone.now(), '%d_%m_%y_%H_%M_%S_%s'
+            )
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
 
 
 class Amount(models.Model):
-    amount = models.PositiveSmallIntegerField(
-        verbose_name='Количество',
-        help_text='Количество игридиента, необходимого для рецепта'
+    amount = models.DecimalField(
+        max_digits=6,
+        decimal_places=1,
+        validators=[MinValueValidator(1)]
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='amount',
+        related_name='recipe_ingredients',
         verbose_name='Рецепт',
         help_text='Рецепт'
     )
@@ -123,7 +143,7 @@ class Amount(models.Model):
 
 
 class Favorite(models.Model):
-    author = models.ForeignKey(
+    user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='favorites',
@@ -139,12 +159,12 @@ class Follow(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='folower'
+        related_name='follower'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='folowers',
+        related_name='following',
     )
 
     class Meta:

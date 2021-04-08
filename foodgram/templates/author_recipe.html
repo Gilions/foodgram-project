@@ -1,0 +1,62 @@
+{% extends "include/base.html" %}
+{% load user_filters %}
+{% block title %}Рецепты автора{% endblock %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+{% endblock %}
+{% block header %}
+{% include "include/header.html" %}
+{% endblock %}
+{% block content %}
+{% csrf_token %}
+    <main class="main container">
+        <div class="main__header">
+            <h1 class="main__title">{{ author.get_full_name }}</h1>
+            {% include 'include/tags.html' %}
+        </div>
+<!--        <p style="padding: 0 0 2em 0;"><a class="button button_style_light-blue" href="#">Подписаться на автора</a></p>-->
+        {% if user != author and user.is_authenticated %}
+            <div class="author-subscribe" data-author="{{ author.pk }}">
+                <p style="padding: 0 0 2em 0;">
+                {% if user|sub_to:author %}
+
+                    <button class="button button_style_light-blue button_size_subscribe" name="subscribe">
+                        Отписаться от автора
+                    </button>
+                {% else %}
+                    <button  class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>
+                        Подписаться на автора
+                    </button>
+                {% endif %}
+                </p>
+            </div>
+        {% endif %}
+        <div class="card-list" >
+            {% for recipe in page %}
+                {% include "include/recipe_card.html" %}
+            {% endfor %}
+
+    </div>
+        {% if page.has_other_pages %}
+            {% include "include/paginator.html" with items=page paginator=paginator %}
+        {% endif %}
+    </main>
+{% endblock content %}
+{% block footer %}
+{% include "include/footer.html" %}
+{% endblock %}
+{% block style %}
+    <script src="{% static 'js/components/MainCards.js' %}"></script>
+
+    <script src="{% static 'js/components/Purchases.js' %}"></script>
+    <script src="{% static 'js/components/Favorites.js' %}"></script>
+    <script src="{% static 'js/components/Subscribe.js' %}"></script>
+
+    <script src="{% static 'js/config/config.js' %}"></script>
+    <script src="{% static 'js/components/AuthorRecipe.js' %}"></script>
+    <script src="{% static 'js/components/Header.js' %}"></script>
+
+    <script src="{% static 'js/api/Api.js' %}"></script>
+    <script src="{% static 'authorRecipe.js' %}"></script>
+{% endblock style %}

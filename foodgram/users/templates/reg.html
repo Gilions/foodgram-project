@@ -23,18 +23,15 @@
             {% for field in form %}
 
                 <div class="form__group">
-                    <label for="{{ field.id_for_label }}" class="form__label">
+                    <label class="form__label">
                         {{ field.label }}
                     </label>
                 <div class="form__field-group">
-
                     {{ field|addclass:"form__input" }}
-
                     <span class="form__error">{{ field.errors }}</span>
                 </div>
             </div>
             {% endfor %}
-
             <div class="form__footer">
                 <button class="button button_style_blue">Создать аккаунт</button>
             </div>
@@ -44,5 +41,7 @@
 
 </main>
 {% endblock content %}
+{% block footer %}
 {% include "include/footer.html" %}
+{% endblock %}
 

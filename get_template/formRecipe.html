@@ -1,32 +1,15 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Создание рецепта</title>
-    <link rel="stylesheet" href="./pages/form.css">
-</head>
-<body class="body">
-<header class="header">
-    <nav class="nav">
-        <div class="nav__container container">
-            <ul class="nav__items list">
-                <li class="nav__item"><a href="#" class="nav__link link">Рецепты</a></li>
-                <li class="nav__item"><a href="#" class="nav__link link">Мои подписки</a></li>
-                <li class="nav__item"><a href="#" class="nav__link link">Создать рецепт</a></li>
-                <li class="nav__item"><a href="#" class="nav__link link">Избранное</a></li>
-                <li class="nav__item"><a href="#" class="nav__link link">Список покупок</a> <span class="badge badge_style_blue nav__badge" id="counter"></span></li>
-
-            </ul>
-            <ul class="nav__items list">
-                <li class="nav__item"><a href="#" class="nav__link link">Изменить пароль</a></li>
-                <li class="nav__item"><a href="#" class="nav__link link">Выход</a></li>
-            </ul>
-        </div>
-    </nav>
-</header>
+{% extends "include/base.html" %}
+{% load static %}
+{% block title %}
+    Создание рецепта
+{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'pages/form.css' %}">
+{% endblock %}
+{% block header %}
+{% include "include/header.html" %}
+{% endblock %}
+{% block content %}
 <main class="main container">
     <div class="main__header">
         <h1 class="main__title">Создание рецепта</h1>
@@ -108,19 +91,16 @@
 
 
 </main>
-<footer class="footer">
-    <div class="footer__container container">
-        <a href="#" class="footer__brand link">Продуктовый помощник</a>
-        <ul class="footer__items">
-            <li class="footer__item"><a href="#" class="footer__link link">Об авторе </a></li>
-            <li class="footer__item"><a href="#" class="footer__link link">Технологии</a></li>
-        </ul>
-    </div>
-</footer>
-<script src="./js/config/config.js"></script>
-<script src="./js/components/Header.js"></script>
-<script src="./js/utils/debouncing.js"></script>
-<script src="./js/api/Api.js"></script>
-<script src="formRecipe.js"></script>
-</body>
-</html>
+{% endblock %}
+{% block footer %}
+{% include "include/footer.html" %}
+{% endblock %}
+
+{% block style %}
+
+<script src="{% static 'js/config/config.js' %}"></script>
+<script src="{% static 'js/components/Header.js' %}"></script>
+<script src="{% static 'js/utils/debouncing.js' %}"></script>
+<script src="{% static 'js/api/Api.js' %}"></script>
+<script src="{% static 'formRecipe.js' %}"></script>
+{% endblock %}

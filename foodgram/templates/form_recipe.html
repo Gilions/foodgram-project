@@ -1,0 +1,108 @@
+{% extends "include/base.html" %}
+{% load static %}
+{% load user_filters %}
+{% block title %}
+    Создание рецепта
+{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'pages/form.css' %}">
+{% endblock %}
+{% block header %}
+{% include "include/header.html" %}
+{% endblock %}
+{% block content %}
+<main class="main container">
+    <div class="main__header">
+        <h1 class="main__title">Создание рецепта</h1>
+    </div>
+    <div class="form-container">
+        <form class="form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form__group">
+                <label class="form__label">{{ form.name.label }}</label>
+                <div class="form__field-group">
+                    {{ form.name }}
+                    {% if form.errors %}
+                        {% for error in form.title.errors %}
+                            <span class="form__error">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form__group">
+                <p class="form__label">{{ form.tag.label }}</p>
+                <div class="form__field-group">
+                    <div class="tags">
+                        {% for tag in form.tag %}
+                        <div class="tags__item">
+                      {{ tag }}
+                  </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.errors %}
+                        {% for error in form.title.errors %}
+                            <span class="form__error">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form__group">
+                <label for="nameIngredient" class="form__label">Ингредиенты</label>
+                <div class="form__field-group">
+                    <div class="form__field-group-ingredientes">
+                        <div class="form__dropdown">
+                            <input type="text" id="nameIngredient" class="form__input">
+                            <div class="form__dropdown-items"></div>
+                        </div>
+                        <input type="number" id="cantidad" class="form__input" min="0">
+                        <label for="cantidad" class="form__label" id="cantidadVal">шт.</label>
+                    </div>
+                    <div class="form__field-group-ingredientes-container">
+
+                    </div>
+                    <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
+                    <span class="form__error"></span>
+                </div>
+            </div>
+            <div class="form__group">
+                <label class="form__label">{{ form.time_cooking.label }}</label>
+                <div class="form__field-group form__field-group_time">
+                    {{ form.time_cooking }}
+                    <label class="form__label">минут</label>
+                    <span class="form__error"></span>
+                </div>
+            </div>
+            <div class="form__group">
+                <label class="form__label">{{ form.description.label }}</label>
+                <div class="form__field-group">
+                    {{ form.description }}
+                </div>
+            </div>
+             <div class="form__group">
+        <span class="form__label">Загрузить фото</span>
+        <div class="form__field-group">
+          {{ form.image|addclass:"form__file-button" }}
+          <span class="form__error">{{ form.image.errors }}</span>
+        </div>
+      </div>
+            <div class="form__footer">
+                <button class="button button_style_blue" type="submit">Создать рецепт</button>
+            </div>
+        </form>
+    </div>
+
+
+</main>
+{% endblock %}
+{% block footer %}
+{% include "include/footer.html" %}
+{% endblock %}
+
+{% block style %}
+
+<script src="{% static 'js/config/config.js' %}"></script>
+<script src="{% static 'js/components/Header.js' %}"></script>
+<script src="{% static 'js/utils/debouncing.js' %}"></script>
+<script src="{% static 'js/api/Api.js' %}"></script>
+<script src="{% static 'formRecipe.js' %}"></script>
+{% endblock %}
