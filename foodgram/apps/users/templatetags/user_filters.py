@@ -1,6 +1,6 @@
 from django import template
 
-from recipes.models import Follow, Favorite
+from apps.recipes.models import Follow, Favorite, Cart
 
 register = template.Library()
 
@@ -18,3 +18,15 @@ def sub_to(user, author):
 @register.filter
 def fav_to(user, recipe):
     return Favorite.objects.filter(user=user, recipe=recipe).exists()
+
+
+@register.filter
+def bought_to(user, recipe):
+    return Cart.objects.filter(customer=user, item=recipe).exists()
+
+
+@register.filter
+def purchases_count(user):
+    if user.purchases.all().count() == 0:
+        return ''
+    return user.purchases.all().count()

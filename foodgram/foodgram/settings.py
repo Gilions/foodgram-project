@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'apps.recipes',
+    'apps.users',
     'sorl.thumbnail',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,12 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'debug_toolbar',
     'rest_framework',
     'django_filters',
-    'recipes',
-    'users',
 ]
 
 MIDDLEWARE = [

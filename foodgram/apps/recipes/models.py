@@ -48,7 +48,7 @@ class Tag(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.display_name
 
 
 class Recipe(models.Model):
@@ -106,7 +106,7 @@ class Recipe(models.Model):
         )
 
     class Meta:
-        ordering = ("-fav_counter", "-pub_date",)
+        ordering = ("-pub_date",)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -141,7 +141,6 @@ class Amount(models.Model):
     )
 
 
-
 class Favorite(models.Model):
     user = models.ForeignKey(
         User,
@@ -169,3 +168,18 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = ('user', 'author')
+
+
+class Cart(models.Model):
+    item = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+    )
+    customer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='purchases',
+    )
+
+    class Meta:
+        unique_together = ('item', 'customer')

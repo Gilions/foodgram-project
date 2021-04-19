@@ -1,0 +1,58 @@
+{% extends "include/base.html" %}
+{% load user_filters %}
+{% block title %}Список покупок{% endblock %}
+{% load static %}
+{% load thumbnail %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'pages/shopList.css' %}">
+{% endblock %}
+
+{% block header %}
+{% include "include/header.html" %}
+{% endblock %}
+
+{% block content %}
+<main class="main container">
+    {% if recipes %}
+        <div class="main__header">
+            <h1 class="main__title">Список покупок</h1>
+        </div>
+        <div class="card-list card-list_column">
+            <ul class="shopping-list">
+                {% for recipe in recipes %}
+                    <li class="shopping-list__item" data-id="{{ recipe.id }}">
+                        <div class="recipe recipe_reverse">
+                            {% thumbnail recipe.item.image "480x480" as im %}
+                                <img src="{{ im.url }}" alt="Картинка" class="recipe__image recipe__image_big">
+                            {% endthumbnail %}
+                        <h3 class="recipe__title">{{ recipe.item.name }}</h3>
+                        <p class="recipe__text"><span class="icon-time"></span> {{ recipe.item.time_cooking }} мин.</p>
+                        </div>
+                        <a href="{% url 'remove_recipe_from_cart' recipe.item.id %}" class="shopping-list__button link">Удалить</a>
+                    </li>
+                {% endfor %}
+
+            </ul>
+            <a href="{% url 'download' %}"><button class="button button_style_blue">Скачать список</button></a>
+            {% else %}
+                <div class="main__header">
+                    <h1 class="main__title">Корзина пуста</h1>
+                </div>
+            {% endif %}
+
+
+        </div>
+</main>
+{% endblock content %}
+
+{% block footer %}
+{% include "include/footer.html" %}
+{% endblock %}
+
+{% block style %}
+<script src="{% static 'js/config/config.js' %}"></script>
+<script src="{% static 'js/components/Header.js' %}"></script>
+<script src="{% static 'js/components/ShopList.js' %}"></script>
+<script src="{% static 'js/api/Api.js' %}"></script>
+<script src="{% static 'shopList.js' %}"></script>
+{% endblock style %}

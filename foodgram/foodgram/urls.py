@@ -23,12 +23,12 @@ from foodgram import settings
 
 urlpatterns = [
     # Регистрация/авторизация
-    path("auth/", include("users.urls")),
+    path("auth/", include("apps.users.urls")),
     path("auth/", include("django.contrib.auth.urls")),
     # Админка
     path('admin/', admin.site.urls),
     # Остальные урлы
-    path('', include('recipes.urls')),
+    path('', include('apps.recipes.urls')),
 ]
 
 if settings.DEBUG:
