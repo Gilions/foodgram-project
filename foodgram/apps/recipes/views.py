@@ -150,6 +150,7 @@ def recipe_edit(request, slug):
                       instance=recipe)
 
     if request.method == 'POST':
+
         if not get_tags(request):
             form.add_error(None, "Необходимо выбрать тип блюда!")
         if check(request):
