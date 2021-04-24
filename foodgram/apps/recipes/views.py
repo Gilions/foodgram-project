@@ -14,7 +14,7 @@ from .models import Tag, Recipe, Cart, \
     User, Favorite, Follow, Components, Amount
 from .forms import RecipeForm
 from .serializers import ComponentsSerializer
-from .utility import download_pdf
+from .utility import download_pdf, check, get_tags
 
 TAGS = ['breakfast', 'lunch', 'dinner']
 
@@ -106,24 +106,31 @@ def author_view(request, username):
 
 @login_required
 def create(request):
+    form = RecipeForm()
+
     # Создаем новый рецепт
     if request.method == 'POST':
         form = RecipeForm(request.POST, request.FILES)
-        # Проверяем наличие ингредиентов
-        if 'nameIngredient_1' not in request.POST:
-            form.add_error(None, 'Необходимо указать ингредиенты!')
-        else:
-            # Создаем рецепт
-            if form.is_valid():
-                with transaction.atomic():
-                    instance = form.save(commit=False)
-                    instance.author = request.user
-                    instance.save()
 
-                    add_m2m(request, form, instance)
-                    return redirect('recipe',  instance.slug)
+        if not get_tags(request):
+            form.add_error(None, "Необходимо выбрать тип блюда!")
+        if check(request):
+            form.add_error(None, "Необходимо добавить ингредиенты!")
 
-    form = RecipeForm()
+        # Создаем рецепт
+        if form.is_valid():
+            with transaction.atomic():
+                instance = form.save(commit=False)
+                instance.author = request.user
+                instance.save()
+
+                tags = get_tags(request)
+                for i in tags:
+                    tag = Tag.objects.get(name=i)
+                    instance.tag.add(tag.id)
+
+                add_m2m(request, form, instance)
+                return redirect('recipe',  instance.slug)
     context = {
         'form': form,
     }
@@ -143,6 +150,11 @@ def recipe_edit(request, slug):
                       instance=recipe)
 
     if request.method == 'POST':
+        if not get_tags(request):
+            form.add_error(None, "Необходимо выбрать тип блюда!")
+        if check(request):
+            form.add_error(None, "Необходимо добавить ингредиенты!")
+
         if form.is_valid():
             with transaction.atomic():
                 instance = form.save(commit=False)
@@ -262,17 +274,6 @@ class ComponentsViewSet(generics.ListAPIView):
 
 
 def add_m2m(request, form, recipe):
-    # Add tags
-    if request.POST.get('breakfast'):
-        tag = Tag.objects.get(name='breakfast')
-        recipe.tag.add(tag.id)
-    if request.POST.get('lunch'):
-        tag = Tag.objects.get(name='lunch')
-        recipe.tag.add(tag.id)
-    if request.POST.get('dinner'):
-        tag = Tag.objects.get(name='dinner')
-        recipe.tag.add(tag.id)
-
     # Add ingredients
     ingredients = []
     name = None

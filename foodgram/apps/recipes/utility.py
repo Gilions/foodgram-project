@@ -73,3 +73,19 @@ def download_pdf(data):
     p.showPage()
     p.save()
     return response
+
+
+def check(request):
+    # Проверяем наличие ингредиентов
+    for key in request.POST.keys():
+        if 'nameIngredient' in key:
+            return False
+    return True
+
+
+def get_tags(request):
+    tags_list = []
+    for key in request.POST.keys():
+        if key in ['breakfast', 'lunch', 'dinner']:
+            tags_list.append(key)
+    return tags_list

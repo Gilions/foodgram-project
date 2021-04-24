@@ -77,11 +77,11 @@
               </div>
             </div>
 
-            {% if form.errors %}
-              {% for error in form.title.errors %}
-                <span class="form__error">{{ error|escape }}</span>
-              {% endfor %}
-            {% endif %}
+            {% for errors in form.non_field_errors %}
+              {% if errors == "Необходимо выбрать тип блюда!" %}
+                <span class="form__error">{{ errors }}</span>
+              {% endif %}
+            {% endfor %}
 
           </div>
         </div>
@@ -113,9 +113,11 @@
 
             <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
 
-            {% if form.errors %}
-                <span class="form__error">Необходимо указать ингредиенты!</span>
-            {% endif %}
+            {% for errors in form.non_field_errors %}
+              {% if errors == "Необходимо добавить ингредиенты!"%}
+                <span class="form__error">{{ errors }}</span>
+              {% endif %}
+            {% endfor %}
           </div>
         </div>
         <div class="form__group">
