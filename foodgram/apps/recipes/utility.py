@@ -1,8 +1,11 @@
+from django.db import transaction
 from django.http import HttpResponse
+
 
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+import datetime as dt
 
 
 letters = {
@@ -75,12 +78,18 @@ def download_pdf(data):
     return response
 
 
-def check(request):
-    # Проверяем наличие ингредиентов
+def check(request, form):
+    ingredient = False
+    tags = False
     for key in request.POST.keys():
         if 'nameIngredient' in key:
-            return False
-    return True
+            ingredient = True
+        if key in ['breakfast', 'lunch', 'dinner']:
+            tags = True
+    if not ingredient:
+        form.add_error(None, "Необходимо добавить ингредиенты!")
+    if not tags:
+        form.add_error(None, "Необходимо выбрать тип блюда!")
 
 
 def get_tags(request):
@@ -89,3 +98,24 @@ def get_tags(request):
         if key in ['breakfast', 'lunch', 'dinner']:
             tags_list.append(key)
     return tags_list
+
+
+def new_recipe(request, form):
+    check(request, form)
+    if form.is_valid():
+        with transaction.atomic():
+            instance = form.save(commit=False)
+            instance.author = request.user
+            instance.save()
+            return instance
+
+
+def edit_recipe(request, form):
+    check(request, form)
+    if form.is_valid():
+        with transaction.atomic():
+            instance = form.save(commit=False)
+            instance.pub_date = dt.datetime.now()
+            instance.tag.clear()
+            instance.save()
+            return instance

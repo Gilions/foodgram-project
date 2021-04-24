@@ -2,19 +2,18 @@ from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from rest_framework import generics
 from rest_framework.utils import json
-import datetime as dt
+
 
 from .models import Tag, Recipe, Cart, \
     User, Favorite, Follow, Components, Amount
 from .forms import RecipeForm
 from .serializers import ComponentsSerializer
-from .utility import download_pdf, check, get_tags
+from .utility import download_pdf, get_tags, new_recipe, edit_recipe
 
 TAGS = ['breakfast', 'lunch', 'dinner']
 
@@ -107,30 +106,20 @@ def author_view(request, username):
 @login_required
 def create(request):
     form = RecipeForm()
-
-    # Создаем новый рецепт
+    # Create new recipe
     if request.method == 'POST':
         form = RecipeForm(request.POST, request.FILES)
 
-        if not get_tags(request):
-            form.add_error(None, "Необходимо выбрать тип блюда!")
-        if check(request):
-            form.add_error(None, "Необходимо добавить ингредиенты!")
-
-        # Создаем рецепт
-        if form.is_valid():
-            with transaction.atomic():
-                instance = form.save(commit=False)
-                instance.author = request.user
-                instance.save()
-
-                tags = get_tags(request)
-                for i in tags:
-                    tag = Tag.objects.get(name=i)
-                    instance.tag.add(tag.id)
-
-                add_m2m(request, form, instance)
-                return redirect('recipe',  instance.slug)
+        instance = new_recipe(request, form)
+        # Adds tags
+        if instance:
+            tags = get_tags(request)
+            for i in tags:
+                tag = Tag.objects.get(name=i)
+                instance.tag.add(tag.id)
+            # Adds ingredients
+            get_ingredients(request, form, instance)
+            return redirect('recipe',  instance.slug)
     context = {
         'form': form,
     }
@@ -150,23 +139,19 @@ def recipe_edit(request, slug):
                       instance=recipe)
 
     if request.method == 'POST':
+        instance = edit_recipe(request, form)
+        if instance:
+            # Remove unnecessary ingredients
+            Amount.objects.filter(recipe=instance).delete()
+            # Adds tags
+            tags = get_tags(request)
+            for i in tags:
+                tag = Tag.objects.get(name=i)
+                instance.tag.add(tag.id)
+            # Adds ingredients
+            get_ingredients(request, form, instance)
 
-        if not get_tags(request):
-            form.add_error(None, "Необходимо выбрать тип блюда!")
-        if check(request):
-            form.add_error(None, "Необходимо добавить ингредиенты!")
-
-        if form.is_valid():
-            with transaction.atomic():
-                instance = form.save(commit=False)
-                instance.pub_date = dt.datetime.now()
-                instance.tag.clear()
-                instance.save()
-                # Чистим не нужные ингредиенты
-                Amount.objects.filter(recipe=instance).delete()
-                # Добавляем Теги/Ингредиенты
-                add_m2m(request, form, instance)
-                return redirect('recipe', recipe.slug)
+            return redirect('recipe', recipe.slug)
     context = {
         'edit': edit,
         'recipe': recipe,
@@ -274,7 +259,7 @@ class ComponentsViewSet(generics.ListAPIView):
             return queryset
 
 
-def add_m2m(request, form, recipe):
+def get_ingredients(request, form, recipe):
     # Add ingredients
     ingredients = []
     name = None
