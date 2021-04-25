@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.views.generic.base import TemplateView
 from rest_framework import generics
 from rest_framework.utils import json
 

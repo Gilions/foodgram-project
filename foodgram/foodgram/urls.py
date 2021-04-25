@@ -17,9 +17,14 @@ import debug_toolbar
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
-
+from django.conf.urls import handler404, handler500
 
 from foodgram import settings
+
+
+handler404 = "apps.about.views.page_not_found" # noqa
+handler500 = "apps.about.views.server_error" # noqa
+
 
 urlpatterns = [
     # Регистрация/авторизация
@@ -27,6 +32,8 @@ urlpatterns = [
     path("auth/", include("django.contrib.auth.urls")),
     # Админка
     path('admin/', admin.site.urls),
+    path('about/', include("apps.about.urls")),
+
     # Остальные урлы
     path('', include('apps.recipes.urls')),
 ]

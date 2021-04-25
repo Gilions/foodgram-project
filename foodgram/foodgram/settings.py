@@ -25,12 +25,18 @@ SECRET_KEY = '6m+%9$h)m7_s_m^=$q-1v@pbf2i4d1uonrzq=4rvhov%t%ozl1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "[::1]",
+    "testserver",
+]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'apps.about',
     'apps.recipes',
     'apps.users',
     'sorl.thumbnail',
@@ -43,6 +49,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'rest_framework',
     'django_filters',
+
 ]
 
 MIDDLEWARE = [

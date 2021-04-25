@@ -36,13 +36,14 @@
                 {% endfor %}
                 <li class="card-user__item">
                     {% if  follow.author.recipes.all.count > 3 %}
-                        <a href="{% url 'author_recipe' follow.author %}" class="card-user__link link">Еще {{ follow.author.recipes.all.count }} рецептов...</a>
+                        <a href="{% url 'author_recipe' follow.author %}" class="card-user__link link">{{ follow.author.recipes.all.count|follow_count }} </a>
                     {% endif %}
                 </li>
             </ul>
         </div>
         <div class="card-user__footer">
             <button class="button button_style_light-blue button_size_auto" name="subscribe">Отписаться</button>
+
         </div>
     </div>
         {% endfor %}
