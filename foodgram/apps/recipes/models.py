@@ -26,6 +26,9 @@ class Components(models.Model):
         help_text='Единица измерения, максимум 20 симоволов'
     )
 
+    class Meta:
+        verbose_name_plural = ("Ингредиенты")
+
     def __str__(self):
         return self.name
 
@@ -46,6 +49,9 @@ class Tag(models.Model):
         verbose_name='Цвет тега',
         blank=True
     )
+
+    class Meta:
+        verbose_name_plural = ("Теги")
 
     def __str__(self):
         return self.display_name
@@ -107,6 +113,7 @@ class Recipe(models.Model):
 
     class Meta:
         ordering = ("-pub_date",)
+        verbose_name_plural = ("Рецепты")
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -140,6 +147,10 @@ class Amount(models.Model):
         help_text='Ингредиент'
     )
 
+    class Meta:
+        verbose_name_plural = ("Состав")
+
+
 
 class Favorite(models.Model):
     user = models.ForeignKey(
@@ -152,6 +163,9 @@ class Favorite(models.Model):
         on_delete=models.CASCADE,
         related_name='related_recipes',
     )
+
+    class Meta:
+        verbose_name_plural = ("Избранные")
 
 
 class Follow(models.Model):
@@ -168,6 +182,7 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = ('user', 'author')
+        verbose_name_plural = ("Подписка")
 
 
 class Cart(models.Model):
@@ -183,3 +198,4 @@ class Cart(models.Model):
 
     class Meta:
         unique_together = ('item', 'customer')
+        verbose_name_plural = ("Корзина")

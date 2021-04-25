@@ -73,6 +73,27 @@ def favorite_index(request):
     return render(request, 'favorite.html', context)
 
 
+def author_view(request, username):
+    # Рецепты автора
+    tags = Tag.objects.all()
+    tags_list = request.GET.getlist('tag', TAGS)
+    author = get_object_or_404(User, username=username)
+    recipe_list = Recipe.objects.filter(
+        author=author,
+        tag__name__in=tags_list
+    ).prefetch_related('tag').select_related('author').distinct()
+    paginator = Paginator(recipe_list, 6)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    context = {
+        'tags': tags,
+        'author': author,
+        'page': page,
+        "paginator": paginator
+    }
+    return render(request, 'author_recipes.html', context)
+
+
 @login_required
 def cart(request):
     context = {
@@ -87,21 +108,6 @@ def recipe_view(request, slug):
         'recipe': recipe,
     }
     return render(request, 'recipe_page.html', context)
-
-
-def author_view(request, username):
-    # Рецепты автора
-    author = get_object_or_404(User, username=username)
-    recipe_list = Recipe.objects.filter(author=author)
-    paginator = Paginator(recipe_list, 6)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-    context = {
-        'author': author,
-        'page': page,
-        "paginator": paginator
-    }
-    return render(request, 'author_recipes.html', context)
 
 
 @login_required
