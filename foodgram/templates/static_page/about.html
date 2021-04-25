@@ -1,0 +1,23 @@
+{% extends "include/base.html" %}
+{%  load static %}
+
+{% block title %}Об авторе{% endblock %}
+
+{% block css %}<link rel="stylesheet" href="{% static 'pages/index.css' %}"/>{% endblock %}
+
+{% block header %}{% include "include/header.html" %}{% endblock %}
+
+{% block content %}
+<main class="main container">
+    <h1>Очень простая страница</h1>
+    <p>На создание этой страницы у меня ушло пять минут! Ай да я.</p>
+
+
+</main>
+{% endblock content %}
+
+{% block footer %}
+  {% include "include/footer.html" %}
+{% endblock %}
+
+
