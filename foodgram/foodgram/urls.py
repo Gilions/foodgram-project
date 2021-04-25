@@ -34,6 +34,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('about/', include("apps.about.urls")),
 
+    path('api/', include("apps.api.urls")),
+
     # Остальные урлы
     path('', include('apps.recipes.urls')),
 ]

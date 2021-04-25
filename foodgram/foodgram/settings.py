@@ -36,6 +36,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'apps.api',
     'apps.about',
     'apps.recipes',
     'apps.users',

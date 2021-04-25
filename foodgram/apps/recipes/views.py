@@ -4,16 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
-from django.views.generic.base import TemplateView
-from rest_framework import generics
-from rest_framework.utils import json
 
 
-from .models import Tag, Recipe, Cart, \
-    User, Favorite, Follow, Components, Amount
+from .models import Tag, Recipe, Cart, User, Components, Amount
 from .forms import RecipeForm
-from .serializers import ComponentsSerializer
 from .utility import download_pdf, get_tags, new_recipe, edit_recipe
 
 TAGS = ['breakfast', 'lunch', 'dinner']
@@ -74,7 +68,7 @@ def favorite_index(request):
 
 
 def author_view(request, username):
-    # Рецепты автора
+    # Authors recipes
     tags = Tag.objects.all()
     tags_list = request.GET.getlist('tag', TAGS)
     author = get_object_or_404(User, username=username)
@@ -179,64 +173,6 @@ def recipe_delete(request, slug):
     return redirect('author_recipe', request.user.username)
 
 
-@login_required
-def subscription(request, author_id=None):
-    # Subscribe to author
-    if request.method == 'POST':
-        get_id = json.loads(request.body.decode())['id']
-        author = get_object_or_404(User, id=get_id)
-        # Check permission
-        sub = Follow.objects.filter(user=request.user, author=author).exists()
-        if request.user == author or sub:
-            return redirect('author_recipe', author.username)
-
-        Follow.objects.create(user=request.user, author=author)
-        return JsonResponse({'success': True})
-
-    if request.method == 'DELETE':
-        author = get_object_or_404(User, id=author_id)
-        Follow.objects.filter(user=request.user, author=author).delete()
-        return JsonResponse({'success': True})
-
-
-@login_required
-def favorite(request, recipe_id=None):
-    if request.method == 'POST':
-        get_id = json.loads(request.body.decode())['id']
-        recipe = get_object_or_404(Recipe, id=get_id)
-        check = Favorite.objects.filter(
-            user=request.user, recipe=recipe).exists()
-        if check is False:
-            Favorite.objects.create(user=request.user, recipe=recipe)
-            recipe.fav_counter += 1
-            recipe.save()
-            return JsonResponse({'success': True})
-
-    if request.method == 'DELETE':
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        Favorite.objects.filter(user=request.user, recipe=recipe).delete()
-        recipe.fav_counter -= 1
-        recipe.save()
-        return JsonResponse({'success': True})
-
-
-@login_required
-def purchases(request, recipe_id=None):
-    if request.method == 'POST':
-        get_id = json.loads(request.body.decode())['id']
-        recipe = get_object_or_404(Recipe, id=get_id)
-        check = Cart.objects.filter(
-            item=recipe, customer=request.user).exists()
-        if check is False:
-            Cart.objects.create(item=recipe, customer=request.user)
-            return JsonResponse({'success': True})
-
-    if request.method == "DELETE":
-        recipes = get_object_or_404(Recipe, id=recipe_id)
-        Cart.objects.filter(item=recipes, customer=request.user).delete()
-        return JsonResponse({'success': True})
-
-
 def remove_recipe_from_cart(request, recipe_id):
     recipes = get_object_or_404(Recipe, id=recipe_id)
     Cart.objects.filter(item=recipes, customer=request.user).delete()
@@ -253,17 +189,6 @@ def download(request):
             ).annotate(amount=Sum('item__recipe_ingredients__amount')).all()
 
     return download_pdf(data)
-
-
-class ComponentsViewSet(generics.ListAPIView):
-    # Search ingredients
-    serializer_class = ComponentsSerializer
-
-    def get_queryset(self):
-        data = self.request.GET['query']
-        if data is not None:
-            queryset = Components.objects.filter(name__istartswith=data)
-            return queryset
 
 
 def get_ingredients(request, form, recipe):
