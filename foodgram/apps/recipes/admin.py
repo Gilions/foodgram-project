@@ -28,7 +28,9 @@ class ComponentsAdmin(admin.ModelAdmin):
 
 
 class MyUserAdmin(UserAdmin):
-    list_filter = UserAdmin.list_filter + ('groups__name', 'email', 'is_active',)
+    list_filter = UserAdmin.list_filter + (
+        'groups__name', 'email', 'is_active',
+    )
 
 
 admin.site.unregister(User)

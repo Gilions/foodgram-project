@@ -151,7 +151,6 @@ class Amount(models.Model):
         verbose_name_plural = ("Состав")
 
 
-
 class Favorite(models.Model):
     user = models.ForeignKey(
         User,

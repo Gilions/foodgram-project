@@ -14,7 +14,9 @@ TAGS = ['breakfast', 'lunch', 'dinner']
 
 
 def index(request):
+    # The main page of the site.
     tags = Tag.objects.all()
+    # Sort by tags.
     tags_list = request.GET.getlist('tag', TAGS)
     recipe_list = Recipe.objects.filter(
         tag__name__in=tags_list
@@ -35,6 +37,7 @@ def index(request):
 
 @login_required
 def follow_index(request):
+    # The subscriber page is displayed.
     author_list = request.user.follower.all()
 
     paginator = Paginator(author_list, 6)
@@ -49,6 +52,7 @@ def follow_index(request):
 
 @login_required
 def favorite_index(request):
+    # The favorite recipe page is displayed.
     tags = Tag.objects.all()
     tags_list = request.GET.getlist('tag', TAGS)
     recipe_list = Recipe.objects.filter(
@@ -68,7 +72,7 @@ def favorite_index(request):
 
 
 def author_view(request, username):
-    # Authors recipes
+    # Authors recipes.
     tags = Tag.objects.all()
     tags_list = request.GET.getlist('tag', TAGS)
     author = get_object_or_404(User, username=username)
@@ -90,6 +94,7 @@ def author_view(request, username):
 
 @login_required
 def cart(request):
+    # Site cart.
     context = {
         'recipes': request.user.purchases.all(),
     }
@@ -174,12 +179,15 @@ def recipe_delete(request, slug):
 
 
 def remove_recipe_from_cart(request, recipe_id):
+    # Removes selected recipes from the cart.
     recipes = get_object_or_404(Recipe, id=recipe_id)
     Cart.objects.filter(item=recipes, customer=request.user).delete()
     return redirect('cart')
 
 
 def download(request):
+    # The request loads the ingredients of the selected recipes.
+    # And their amount.
     data = request.user.purchases.select_related(
                 'item'
             ).order_by(
@@ -192,7 +200,7 @@ def download(request):
 
 
 def get_ingredients(request, form, recipe):
-    # Add ingredients
+    # Add Ingredients to New Recipe.
     ingredients = []
     name = None
     for key, value in form.data.items():

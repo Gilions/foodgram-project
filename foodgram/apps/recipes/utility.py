@@ -44,13 +44,15 @@ letters = {
     'я': 'ya',
     ' ': '_',
     '-': '_',
-    '!': '',
 }
 
 
 def translate_rus_eng(text):
-    # Заменяем русские буквы английскими
-    symbols = ['+', '-', ';', '.', ',', '(', ')', '*', '=', '/', '"', "'", ':']
+    # Replacing Russian letters, english
+    symbols = [
+        '+', '-', ';', '.', ',', '(', ')', '*',
+        '=', '/', '"', "'", ':', '!', '?'
+    ]
     for index in symbols:
         text = text.replace(index, '')
     format_text = '{}'.format(text).lower()
@@ -58,6 +60,7 @@ def translate_rus_eng(text):
 
 
 def download_pdf(data):
+    # Download shopping list in pdf format
     pdfmetrics.registerFont(TTFont('DejaVuSans', 'DejaVuSans.ttf'))
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="List product.pdf"'
@@ -79,6 +82,7 @@ def download_pdf(data):
 
 
 def check(request, form):
+    # Check validations fields
     ingredient = False
     tags = False
     for key in request.POST.keys():
@@ -93,6 +97,7 @@ def check(request, form):
 
 
 def get_tags(request):
+    # Get tags field
     tags_list = []
     for key in request.POST.keys():
         if key in ['breakfast', 'lunch', 'dinner']:
@@ -101,6 +106,7 @@ def get_tags(request):
 
 
 def new_recipe(request, form):
+    # Create a new recipe
     check(request, form)
     if form.is_valid():
         with transaction.atomic():
@@ -111,6 +117,7 @@ def new_recipe(request, form):
 
 
 def edit_recipe(request, form):
+    # Edit recipe
     check(request, form)
     if form.is_valid():
         with transaction.atomic():
