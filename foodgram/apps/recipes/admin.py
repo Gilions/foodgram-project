@@ -1,8 +1,6 @@
 from django.contrib import admin
-from .models import Recipe, Components, Amount, Tag, Follow, Favorite, Cart
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
 
+from .models import Amount, Cart, Composition, Favorite, Follow, Recipe, Tag
 
 admin.site.register(Amount)
 admin.site.register(Tag)
@@ -21,17 +19,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ("name",)
 
 
-@admin.register(Components)
+@admin.register(Composition)
 class ComponentsAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'unit',)
     list_filter = ('name',)
-
-
-class MyUserAdmin(UserAdmin):
-    list_filter = UserAdmin.list_filter + (
-        'groups__name', 'email', 'is_active',
-    )
-
-
-admin.site.unregister(User)
-admin.site.register(User, MyUserAdmin)

@@ -4,9 +4,9 @@ from django.shortcuts import get_object_or_404, redirect
 from rest_framework import generics
 from rest_framework.utils import json
 
-from apps.recipes.models import Follow, User, Favorite, Recipe, Cart,\
-    Components
-from apps.recipes.serializers import ComponentsSerializer
+from apps.recipes.models import (Cart, Composition, Favorite, Follow, Recipe,
+                                 User)
+from apps.api.serializers import ComponentsSerializer
 
 
 @login_required
@@ -77,5 +77,5 @@ class ComponentsViewSet(generics.ListAPIView):
     def get_queryset(self):
         data = self.request.GET['query']
         if data is not None:
-            queryset = Components.objects.filter(name__istartswith=data)
+            queryset = Composition.objects.filter(name__istartswith=data)
             return queryset

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Components, Follow
+from apps.recipes.models import Composition, Follow
 
 
 class ComponentsSerializer(serializers.ModelSerializer):
@@ -8,7 +8,7 @@ class ComponentsSerializer(serializers.ModelSerializer):
     dimension = serializers.ReadOnlyField(source='unit')
 
     class Meta:
-        model = Components
+        model = Composition
         fields = ['title', 'dimension']
 
 

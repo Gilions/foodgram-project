@@ -1,17 +1,16 @@
 from datetime import datetime
 
+from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from .utility import translate_rus_eng
 
-
 User = get_user_model()
 
 
-class Components(models.Model):
+class Composition(models.Model):
     # Таблица компонентов
     name = models.CharField(
         db_index=True,
@@ -27,7 +26,7 @@ class Components(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = ("Ингредиенты")
+        verbose_name_plural = "Ингредиенты"
 
     def __str__(self):
         return self.name
@@ -51,7 +50,7 @@ class Tag(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = ("Теги")
+        verbose_name_plural = "Теги"
 
     def __str__(self):
         return self.display_name
@@ -81,7 +80,7 @@ class Recipe(models.Model):
         help_text='Описание рецепта',
         )
     ingredients = models.ManyToManyField(
-        Components,
+        Composition,
         through='Amount',
         through_fields=('recipe', 'ingredient'),
         verbose_name='Игредиенты',
@@ -100,7 +99,7 @@ class Recipe(models.Model):
         help_text='Количество добавлений в избранное',
         default=0,
         )
-    tag = models.ManyToManyField(
+    tags = models.ManyToManyField(
         Tag,
         verbose_name='Теги',
         help_text='Тег рецепта',
@@ -113,7 +112,7 @@ class Recipe(models.Model):
 
     class Meta:
         ordering = ("-pub_date",)
-        verbose_name_plural = ("Рецепты")
+        verbose_name_plural = "Рецепты"
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -140,7 +139,7 @@ class Amount(models.Model):
         help_text='Рецепт'
     )
     ingredient = models.ForeignKey(
-        Components,
+        Composition,
         on_delete=models.CASCADE,
         related_name='+',
         verbose_name='Ингредиент',
@@ -148,7 +147,7 @@ class Amount(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = ("Состав")
+        verbose_name_plural = "Состав"
 
 
 class Favorite(models.Model):
@@ -160,11 +159,11 @@ class Favorite(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='related_recipes',
+        related_name='favorite',
     )
 
     class Meta:
-        verbose_name_plural = ("Избранные")
+        verbose_name_plural = "Избранные"
 
 
 class Follow(models.Model):
@@ -180,8 +179,11 @@ class Follow(models.Model):
     )
 
     class Meta:
-        unique_together = ('user', 'author')
-        verbose_name_plural = ("Подписка")
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'author'],
+                                    name='unique_subscription')
+            ]
+        verbose_name_plural = "Подписка"
 
 
 class Cart(models.Model):
@@ -196,5 +198,8 @@ class Cart(models.Model):
     )
 
     class Meta:
-        unique_together = ('item', 'customer')
-        verbose_name_plural = ("Корзина")
+        constraints = [
+            models.UniqueConstraint(fields=['item', 'customer'],
+                                    name='unique_purchase')
+        ]
+        verbose_name_plural = "Корзина"

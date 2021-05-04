@@ -1,11 +1,12 @@
+import datetime as dt
+
 from django.db import transaction
 from django.http import HttpResponse
-
-
-from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-import datetime as dt
+from reportlab.pdfgen import canvas
+
+from foodgram.settings import TAGS
 
 
 letters = {
@@ -88,7 +89,7 @@ def check(request, form):
     for key in request.POST.keys():
         if 'nameIngredient' in key:
             ingredient = True
-        if key in ['breakfast', 'lunch', 'dinner']:
+        if key in TAGS:
             tags = True
     if not ingredient:
         form.add_error(None, "Необходимо добавить ингредиенты!")
@@ -100,20 +101,22 @@ def get_tags(request):
     # Get tags field
     tags_list = []
     for key in request.POST.keys():
-        if key in ['breakfast', 'lunch', 'dinner']:
+        if key in TAGS:
             tags_list.append(key)
     return tags_list
 
 
 def new_recipe(request, form):
     # Create a new recipe
-    check(request, form)
+    if request.POST:
+        check(request, form)
     if form.is_valid():
         with transaction.atomic():
-            instance = form.save(commit=False)
-            instance.author = request.user
-            instance.save()
-            return instance
+            check(request, form)
+            recipe = form.save(commit=False)
+            recipe.author = request.user
+            recipe.save()
+            return recipe
 
 
 def edit_recipe(request, form):
@@ -126,3 +129,8 @@ def edit_recipe(request, form):
             instance.tag.clear()
             instance.save()
             return instance
+
+
+def tags_filter(request):
+    tags_list = request.GET.getlist('tag', TAGS)
+    return tags_list

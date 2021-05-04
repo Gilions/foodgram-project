@@ -35,7 +35,7 @@
         </div>
         {#            Tags sector #}
         <ul class="single-card__items">
-          {% for tag in recipe.tag.all %}
+          {% for tag in recipe.tags.all %}
             <li class="card__item"><span class="badge badge_style_{{ tag.color }}">{{ tag.display_name }}</span></li>
           {% endfor %}
         </ul>

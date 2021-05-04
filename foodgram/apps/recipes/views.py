@@ -2,33 +2,28 @@ from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Sum
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 
-
-from .models import Tag, Recipe, Cart, User, Components, Amount
+from foodgram.settings import PAGINATION_PAGE_SIZE, TAGS
 from .forms import RecipeForm
-from .utility import download_pdf, get_tags, new_recipe, edit_recipe
-
-TAGS = ['breakfast', 'lunch', 'dinner']
+from .models import Amount, Cart, Composition, Recipe, Tag, User
+from .utility import download_pdf, edit_recipe, get_tags, new_recipe, tags_filter
 
 
 def index(request):
     # The main page of the site.
-    tags = Tag.objects.all()
-    # Sort by tags.
-    tags_list = request.GET.getlist('tag', TAGS)
     recipe_list = Recipe.objects.filter(
-        tag__name__in=tags_list
+        tags__name__in=tags_filter(request)
     ).prefetch_related(
-        'tag'
+        'tags'
     ).select_related('author').distinct()
-
-    paginator = Paginator(recipe_list, 6)
+    paginator = Paginator(recipe_list, PAGINATION_PAGE_SIZE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     context = {
-        'tags': tags,
+        'tags': Tag.objects.all(),
         'page': page,
         "paginator": paginator
     }
@@ -40,7 +35,7 @@ def follow_index(request):
     # The subscriber page is displayed.
     author_list = request.user.follower.all()
 
-    paginator = Paginator(author_list, 6)
+    paginator = Paginator(author_list, PAGINATION_PAGE_SIZE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     context = {
@@ -53,18 +48,16 @@ def follow_index(request):
 @login_required
 def favorite_index(request):
     # The favorite recipe page is displayed.
-    tags = Tag.objects.all()
-    tags_list = request.GET.getlist('tag', TAGS)
     recipe_list = Recipe.objects.filter(
-        related_recipes__user=request.user,
-        tag__name__in=tags_list
-    ).prefetch_related('tag').select_related('author').distinct()
+        favorite__user=request.user,
+        tags__name__in=tags_filter(request)
+    ).prefetch_related('tags').select_related('author').distinct()
 
-    paginator = Paginator(recipe_list, 6)
+    paginator = Paginator(recipe_list, PAGINATION_PAGE_SIZE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     context = {
-        'tags': tags,
+        'tags': Tag.objects.all(),
         'page': page,
         "paginator": paginator
     }
@@ -74,13 +67,12 @@ def favorite_index(request):
 def author_view(request, username):
     # Authors recipes.
     tags = Tag.objects.all()
-    tags_list = request.GET.getlist('tag', TAGS)
     author = get_object_or_404(User, username=username)
     recipe_list = Recipe.objects.filter(
         author=author,
-        tag__name__in=tags_list
-    ).prefetch_related('tag').select_related('author').distinct()
-    paginator = Paginator(recipe_list, 6)
+        tags__name__in=tags_filter(request)
+    ).prefetch_related('tags').select_related('author').distinct()
+    paginator = Paginator(recipe_list, PAGINATION_PAGE_SIZE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     context = {
@@ -111,21 +103,18 @@ def recipe_view(request, slug):
 
 @login_required
 def create(request):
-    form = RecipeForm()
     # Create new recipe
-    if request.method == 'POST':
-        form = RecipeForm(request.POST, request.FILES)
-
-        instance = new_recipe(request, form)
-        # Adds tags
-        if instance:
-            tags = get_tags(request)
-            for i in tags:
-                tag = Tag.objects.get(name=i)
-                instance.tag.add(tag.id)
-            # Adds ingredients
-            get_ingredients(request, form, instance)
-            return redirect('recipe',  instance.slug)
+    form = RecipeForm(request.POST or None, request.FILES)
+    recipe = new_recipe(request, form)
+    # Adds tags
+    if recipe:
+        tags = get_tags(request)
+        for i in tags:
+            tag = Tag.objects.get(name=i)
+            recipe.tags.add(tag.id)
+        # Adds ingredients
+        get_ingredients(request, form, recipe)
+        return redirect('recipe',  recipe.slug)
     context = {
         'form': form,
     }
@@ -153,7 +142,7 @@ def recipe_edit(request, slug):
             tags = get_tags(request)
             for i in tags:
                 tag = Tag.objects.get(name=i)
-                instance.tag.add(tag.id)
+                instance.tags.add(tag.id)
             # Adds ingredients
             get_ingredients(request, form, instance)
 
@@ -162,7 +151,7 @@ def recipe_edit(request, slug):
         'edit': edit,
         'recipe': recipe,
         'form': form,
-        'tags': recipe.tag.all()
+        'tags': recipe.tags.all()
     }
     return render(request, 'form_recipe.html', context)
 
@@ -209,7 +198,7 @@ def get_ingredients(request, form, recipe):
         if 'valueIngredient' in key:
             amount = Decimal(value.replace(',', '.'))
             ingredient = get_object_or_404(
-                Components, name=name)
+                Composition, name=name)
             ingredients.append(
                 Amount(
                     ingredient=ingredient,
