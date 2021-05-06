@@ -37,7 +37,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/yamdb:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram:latest
   deploy:
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
@@ -50,7 +50,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-              sudo docker pull ${{ secrets.DOCKER_USERNAME }}/yamdb:latest
+              sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram:latest
               sudo docker-compose -f ~/code/docker-compose.yaml rm -v
               sudo docker-compose -f ~/code/docker-compose.yaml up -d --force-recreate
   send_message:
