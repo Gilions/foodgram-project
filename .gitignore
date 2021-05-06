@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 media
-
+static
 get_template
 get_template/
 
