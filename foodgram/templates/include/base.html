@@ -1,24 +1,24 @@
 <!doctype html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport"
-            content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>{% block title %}{% endblock %}</title>
-        {% block css %}{% endblock %}
-    </head>
-    <body >
-    {% csrf_token %}
-    {% block header %}
-    {% endblock %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{% block title %}{% endblock %}</title>
+  {% block css %}{% endblock %}
+</head>
+<body >
+{% csrf_token %}
+{% block header %}
+{% endblock %}
 
-    {% block content %}
-    {% endblock content %}
+{% block content %}
+{% endblock content %}
 
-    {% block style %}
-    {% endblock style %}
-    </body>
+{% block style %}
+{% endblock style %}
+</body>
 </html>
 {% block footer %}
 {% endblock %}

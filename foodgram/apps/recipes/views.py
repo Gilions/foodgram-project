@@ -1,15 +1,13 @@
-from decimal import Decimal
-
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
 
-from foodgram.settings import PAGINATION_PAGE_SIZE, TAGS
+from foodgram.settings import PAGINATION_PAGE_SIZE
+
 from .forms import RecipeForm
-from .models import Amount, Cart, Composition, Recipe, Tag, User
-from .utility import download_pdf, edit_recipe, get_tags, new_recipe, tags_filter
+from .models import Cart, Recipe, Tag, User
+from .utility import download_pdf, save_recipe, tags_filter
 
 
 def index(request):
@@ -104,17 +102,11 @@ def recipe_view(request, slug):
 @login_required
 def create(request):
     # Create new recipe
-    form = RecipeForm(request.POST or None, request.FILES)
-    recipe = new_recipe(request, form)
-    # Adds tags
+    form = RecipeForm(request.POST or None, request.FILES or None)
+    recipe = save_recipe(request, form)
     if recipe:
-        tags = get_tags(request)
-        for i in tags:
-            tag = Tag.objects.get(name=i)
-            recipe.tags.add(tag.id)
-        # Adds ingredients
-        get_ingredients(request, form, recipe)
         return redirect('recipe',  recipe.slug)
+
     context = {
         'form': form,
     }
@@ -123,6 +115,7 @@ def create(request):
 
 @login_required
 def recipe_edit(request, slug):
+    # Edit recipe
     edit = True
     recipe = get_object_or_404(Recipe, slug=slug)
 
@@ -130,23 +123,14 @@ def recipe_edit(request, slug):
         if recipe.author != request.user:
             return redirect('recipe', recipe.slug)
 
-    form = RecipeForm(request.POST or None, files=request.FILES or None,
+    form = RecipeForm(request.POST or None,
+                      files=request.FILES or None,
                       instance=recipe)
 
-    if request.method == 'POST':
-        instance = edit_recipe(request, form)
-        if instance:
-            # Remove unnecessary ingredients
-            Amount.objects.filter(recipe=instance).delete()
-            # Adds tags
-            tags = get_tags(request)
-            for i in tags:
-                tag = Tag.objects.get(name=i)
-                instance.tags.add(tag.id)
-            # Adds ingredients
-            get_ingredients(request, form, instance)
+    update_recipe = save_recipe(request, form, edit)
+    if update_recipe:
+        return redirect('recipe', update_recipe.slug)
 
-            return redirect('recipe', recipe.slug)
     context = {
         'edit': edit,
         'recipe': recipe,
@@ -186,24 +170,3 @@ def download(request):
             ).annotate(amount=Sum('item__recipe_ingredients__amount')).all()
 
     return download_pdf(data)
-
-
-def get_ingredients(request, form, recipe):
-    # Add Ingredients to New Recipe.
-    ingredients = []
-    name = None
-    for key, value in form.data.items():
-        if 'nameIngredient' in key:
-            name = value
-        if 'valueIngredient' in key:
-            amount = Decimal(value.replace(',', '.'))
-            ingredient = get_object_or_404(
-                Composition, name=name)
-            ingredients.append(
-                Amount(
-                    ingredient=ingredient,
-                    recipe=recipe,
-                    amount=amount
-                )
-            )
-    Amount.objects.bulk_create(ingredients)

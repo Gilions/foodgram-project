@@ -5,7 +5,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
-from .utility import translate_rus_eng
+from .services import translate_rus_eng
 
 User = get_user_model()
 

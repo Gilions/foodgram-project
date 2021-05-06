@@ -5,10 +5,10 @@
   {% for tag in tags %}
     <li class="tags__item">
       <a
-        id="{{ tag.name }}"
-        class="tags__checkbox tags__checkbox_style_{{ tag.color }}
+          id="{{ tag.name }}"
+          class="tags__checkbox tags__checkbox_style_{{ tag.color }}
         {% if tag.name in request.GET|parse_tags %}tags__checkbox_active{% endif %}"
-        href="{{ request.path }}?{{ request|set_tag_qs:tag}}">
+          href="{{ request.path }}?{{ request|set_tag_qs:tag}}">
       </a>
       <span class="tags__label">{{ tag.display_name }}</span>
     </li>

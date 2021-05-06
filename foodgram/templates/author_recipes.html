@@ -15,7 +15,6 @@
             <h1 class="main__title">{{ author.get_full_name }}</h1>
             {% include 'include/tags.html' %}
         </div>
-<!--        <p style="padding: 0 0 2em 0;"><a class="button button_style_light-blue" href="#">Подписаться на автора</a></p>-->
         {% if user != author and user.is_authenticated %}
             <div class="author-subscribe" data-author="{{ author.pk }}">
                 <p style="padding: 0 0 2em 0;">

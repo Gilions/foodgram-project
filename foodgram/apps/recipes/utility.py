@@ -1,63 +1,16 @@
 import datetime as dt
+from decimal import Decimal
 
-from django.db import transaction
-from django.http import HttpResponse
+from django.db import IntegrityError, transaction
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.shortcuts import get_object_or_404
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
 from foodgram.settings import TAGS
 
-
-letters = {
-    'ь': '',
-    'ъ': '',
-    'а': 'a',
-    'б': 'b',
-    'в': 'v',
-    'г': 'g',
-    'д': 'd',
-    'е': 'e',
-    'ё': 'yo',
-    'ж': 'zh',
-    'з': 'z',
-    'и': 'i',
-    'й': 'y',
-    'к': 'k',
-    'л': 'l',
-    'м': 'm',
-    'н': 'n',
-    'о': 'o',
-    'п': 'p',
-    'р': 'r',
-    'с': 's',
-    'т': 't',
-    'у': 'u',
-    'ф': 'f',
-    'х': 'h',
-    'ц': 'ts',
-    'ч': 'ch',
-    'ш': 'sh',
-    'щ': 'sch',
-    'ы': 'yi',
-    'э': 'e',
-    'ю': 'yu',
-    'я': 'ya',
-    ' ': '_',
-    '-': '_',
-}
-
-
-def translate_rus_eng(text):
-    # Replacing Russian letters, english
-    symbols = [
-        '+', '-', ';', '.', ',', '(', ')', '*',
-        '=', '/', '"', "'", ':', '!', '?'
-    ]
-    for index in symbols:
-        text = text.replace(index, '')
-    format_text = '{}'.format(text).lower()
-    return ''.join(letters.get(x, x) for x in format_text)
+from .models import Amount, Composition, Tag
 
 
 def download_pdf(data):
@@ -82,6 +35,12 @@ def download_pdf(data):
     return response
 
 
+def tags_filter(request):
+    # Get actual tags
+    tags_list = request.GET.getlist('tag', TAGS)
+    return tags_list
+
+
 def check(request, form):
     # Check validations fields
     ingredient = False
@@ -98,7 +57,7 @@ def check(request, form):
 
 
 def get_tags(request):
-    # Get tags field
+    # Get tags list
     tags_list = []
     for key in request.POST.keys():
         if key in TAGS:
@@ -106,31 +65,50 @@ def get_tags(request):
     return tags_list
 
 
-def new_recipe(request, form):
-    # Create a new recipe
+def get_ingredients(form, recipe):
+    # Add Ingredients to New Recipe.
+    ingredients = []
+    name = None
+    for key, value in form.data.items():
+        if 'nameIngredient' in key:
+            name = value
+        if 'valueIngredient' in key:
+            amount = Decimal(value.replace(',', '.'))
+            ingredient = get_object_or_404(
+                Composition, name=name)
+            ingredients.append(
+                Amount(
+                    ingredient=ingredient,
+                    recipe=recipe,
+                    amount=amount
+                )
+            )
+    Amount.objects.bulk_create(ingredients)
+
+
+def save_recipe(request, form, edit=None):
+    # The function writes a recipe to the database or edits it.
     if request.POST:
         check(request, form)
-    if form.is_valid():
-        with transaction.atomic():
-            check(request, form)
-            recipe = form.save(commit=False)
-            recipe.author = request.user
-            recipe.save()
+    try:
+        if form.is_valid():
+            with transaction.atomic():
+                recipe = form.save(commit=False)
+                if edit:
+                    recipe.pub_date = dt.datetime.now()
+                    recipe.tags.clear()
+                else:
+                    recipe.author = request.user
+                recipe.save()
+            # Adds tags to the recipe
+            for index in get_tags(request):
+                tag = get_object_or_404(Tag, name=index)
+                recipe.tags.add(tag.id)
+
+            if edit:
+                Amount.objects.filter(recipe=recipe).delete()
+            # Adds ingredients to the recipe
+            get_ingredients(form, recipe)
             return recipe
-
-
-def edit_recipe(request, form):
-    # Edit recipe
-    check(request, form)
-    if form.is_valid():
-        with transaction.atomic():
-            instance = form.save(commit=False)
-            instance.pub_date = dt.datetime.now()
-            instance.tag.clear()
-            instance.save()
-            return instance
-
-
-def tags_filter(request):
-    tags_list = request.GET.getlist('tag', TAGS)
-    return tags_list
+    except IntegrityError:
+        raise HttpResponseBadRequest

@@ -2,51 +2,51 @@
 {% load static %}
 {% load user_filters %}
 {% block title %}
-        Войти на сайт
+  Войти на сайт
 {% endblock %}
 {% block css %}
-     <link rel="stylesheet" href="{% static 'pages/form.css' %}">
+  <link rel="stylesheet" href="{% static 'pages/form.css' %}">
 {% endblock %}
 {% block header %}
-{% include "include/header.html" %}
+  {% include "include/header.html" %}
 {% endblock %}
 {% block content %}
-<main class="main container">
+  <main class="main container">
     <div class="main__header">
-        <h1 class="main__title">Войти на сайт</h1>
+      <h1 class="main__title">Войти на сайт</h1>
     </div>
     <div class="form-container">
-        <form class="form" method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            <div class="form__group">
-                <label for="{{ field.id_username }}" class="form__label">Имя пользователя</label>
-                <div id="{{ field.id_username }}" class="form__field-group">
-                    {{ form.username|addclass:"form__input" }}
-                </div>
-            </div>
-            <div class="form__group">
-                <label for="{{ form.id_password  }}" class="form__label">Пароль</label>
-                <div id="{{ form.id_password  }}" class="form__field-group">
-                    {{ form.password|addclass:"form__input" }}
-                    {% if form.errors %}
-                        <div class="alert alert-danger" role="alert">
+      <form class="form" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="form__group">
+          <label for="{{ field.id_username }}" class="form__label">Имя пользователя</label>
+          <div id="{{ field.id_username }}" class="form__field-group">
+            {{ form.username|addclass:"form__input" }}
+          </div>
+        </div>
+        <div class="form__group">
+          <label for="{{ form.id_password  }}" class="form__label">Пароль</label>
+          <div id="{{ form.id_password  }}" class="form__field-group">
+            {{ form.password|addclass:"form__input" }}
+            {% if form.errors %}
+              <div class="alert alert-danger" role="alert">
                             <span class="form__error">
                                 Имя пользователя и пароль не совпадают. Введите правильные данные.
                             </span>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="form__footer">
-                <button type="submit" class="button button_style_blue">Войти</button>
-                <a href="{% url 'password_reset' %}" class="form__forgot-link">Забыли пароль?</a>
-            </div>
-        </form>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="form__footer">
+          <button type="submit" class="button button_style_blue">Войти</button>
+          <a href="{% url 'password_reset' %}" class="form__forgot-link">Забыли пароль?</a>
+        </div>
+      </form>
     </div>
-</main>
+  </main>
 {% endblock content %}
 {% block footer %}
-{% include "include/footer.html" %}
+  {% include "include/footer.html" %}
 {% endblock %}
 
 

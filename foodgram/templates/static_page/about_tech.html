@@ -1,19 +1,56 @@
 {% extends "include/base.html" %}
 {%  load static %}
 
-{% block title %}Об авторе{% endblock %}
+{% block title %}Технологии{% endblock %}
 
 {% block css %}<link rel="stylesheet" href="{% static 'pages/index.css' %}"/>{% endblock %}
 
 {% block header %}{% include "include/header.html" %}{% endblock %}
 
 {% block content %}
-<main class="main container">
-    <h1>Очень простая страница</h1>
-    <p>На создание этой страницы у меня ушло пять минут! Ай да я.</p>
+  <main class="main container">
+    <h1>Технологии</h1>
+    <div class="container">
+      <div class="col100">
+        <b>Development:</b>
+        <br>
+        Django - 3
+        <br>
+        Python - 3
+      </div>
+      <div class="col100">
+        <br>
+        <b>API:</b>
+        <br>
+        Django Rest Framework
+      </div>
+    </div>
+
+    <div class="container">
+      <br>
+      <div class="col100">
+        <b>Deploy:</b>
+        <br>
+        Docker
+        <br>
+        NGINX
+        <br>
+        Gunicorn
+        <br>
+        CI/CD GitHub Actions
+        <br>
+        Docker Compose
+      </div>
+      <br>
+      <div class="col100">
+        <b>DataBase:</b>
+        <br>
+        PostgreSQL
+      </div>
+    </div>
 
 
-</main>
+  </main>
 {% endblock content %}
 
 {% block footer %}

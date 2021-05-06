@@ -1,6 +1,5 @@
 from django import template
 
-from apps.recipes.models import Follow, Favorite, Cart
 
 register = template.Library()
 
@@ -12,17 +11,17 @@ def addclass(field, css):
 
 @register.filter
 def sub_to(user, author):
-    return Follow.objects.filter(user=user, author=author).exists()
+    return user.follower.filter(author=author).exists()
 
 
 @register.filter
 def fav_to(user, recipe):
-    return Favorite.objects.filter(user=user, recipe=recipe).exists()
+    return user.favorites.filter(recipe=recipe).exists()
 
 
 @register.filter
 def bought_to(user, recipe):
-    return Cart.objects.filter(customer=user, item=recipe).exists()
+    return user.purchases.filter(item=recipe).exists()
 
 
 @register.filter
