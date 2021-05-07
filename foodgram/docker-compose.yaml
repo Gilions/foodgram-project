@@ -10,7 +10,7 @@ services:
     env_file:
         - ./.env
   web:
-    image: gilions/foodgram
+    build: .
     restart: always
     depends_on:
         - db

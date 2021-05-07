@@ -1,6 +1,6 @@
 FROM python:3.8.5
 WORKDIR /code
-COPY foodgram/ .
+COPY . .
 RUN pip install --upgrade pip && pip install -r requirements.txt && mkdir static media
-COPY ./foodgram/entrypoint.sh /
+COPY ./entrypoint.sh /
 ENTRYPOINT ["sh", "/entrypoint.sh"]
