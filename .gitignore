@@ -130,6 +130,7 @@ dmypy.json
 
 media
 static
+
 get_template
 get_template/
 
