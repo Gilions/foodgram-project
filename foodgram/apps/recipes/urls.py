@@ -20,7 +20,7 @@ urlpatterns = [
 
     # Works with a cart of the site
     path('cart/', cart, name='cart'),
-    path('cart/<int:recipe_id>', remove_recipe_from_cart,
+    path('cart/<int:recipe_id>/', remove_recipe_from_cart,
          name='remove_recipe_from_cart'),
     path('download/', download, name='download'),
 

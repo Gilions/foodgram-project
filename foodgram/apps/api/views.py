@@ -1,4 +1,3 @@
-
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -114,3 +113,4 @@ class ComponentsViewSet(generics.ListAPIView, viewsets.GenericViewSet):
         if data is not None:
             queryset = Composition.objects.filter(name__istartswith=data)
             return queryset
+        return Composition.objects.none()
