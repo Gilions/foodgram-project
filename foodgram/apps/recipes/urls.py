@@ -16,7 +16,7 @@ urlpatterns = [
 
     # Follow and favorite index pages
     path('following/', follow_index, name='follow'),
-    path('my_favorite', favorite_index, name='my_favorite'),
+    path('my_favorite/', favorite_index, name='my_favorite'),
 
     # Works with a cart of the site
     path('cart/', cart, name='cart'),
