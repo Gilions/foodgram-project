@@ -1,5 +1,5 @@
 # Продуктовый помощник
-https://github.com/Gilions/foodgram-project/actions/workflows/main.yml/badge.svg
+![Foodgram](https://github.com/Gilions/foodgram-project/actions/workflows/main.yml/badge.svg)
 
 Сайт доступен по ссылке - http://84.201.154.150/
 
@@ -35,7 +35,7 @@ ______
 
 `git clone <ссылка на репозитарий>`
 
-Перейдите в директорию с проектом. Активируйте виртуальное окружение и
+Перейдите в директорию проекта. Активируйте виртуальное окружение и
 установите пакеты из requirements.txt
 
 `python3 -m venv venv`
