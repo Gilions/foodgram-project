@@ -30,10 +30,11 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    '84.201.154.150',
-    'localhost',
-    'www.cook-book.ml',
-    'cook-book.ml'
+    # '84.201.154.150',
+    # 'localhost',
+    # 'www.cook-book.ml',
+    # 'cook-book.ml'
+    '*'
 ]
 
 
