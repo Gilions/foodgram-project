@@ -32,8 +32,12 @@ class FollowViewSet(CreateDestroyMethod):
     serializer_class = FollowSerializer
     lookup_field = 'author'
 
+
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance = get_object_or_404(Follow,
+                                     user=request.user,
+                                     author=kwargs.get('author')
+                                     )
         self.perform_destroy(instance)
         content = {'success': True}
         return Response(content, status=status.HTTP_200_OK)
@@ -63,7 +67,10 @@ class FavoriteViewSet(CreateDestroyMethod):
         recipe.save()
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance = get_object_or_404(Favorite,
+                                     user=request.user,
+                                     recipe=kwargs.get('recipe')
+                                     )
         id = self.kwargs['recipe']
         recipe = get_object_or_404(Recipe, id=id)
         recipe.fav_counter -= 1
@@ -90,7 +97,10 @@ class PurchasesViewSet(CreateDestroyMethod):
     lookup_field = 'item'
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance = get_object_or_404(Favorite,
+                                     customer=request.user,
+                                     item=kwargs.get('item')
+                                     )
         self.perform_destroy(instance)
         content = {'success': True}
         return Response(content, status=status.HTTP_200_OK)
