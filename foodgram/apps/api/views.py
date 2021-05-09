@@ -32,7 +32,6 @@ class FollowViewSet(CreateDestroyMethod):
     serializer_class = FollowSerializer
     lookup_field = 'author'
 
-
     def destroy(self, request, *args, **kwargs):
         instance = get_object_or_404(Follow,
                                      user=request.user,
