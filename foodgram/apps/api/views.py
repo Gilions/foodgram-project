@@ -96,7 +96,7 @@ class PurchasesViewSet(CreateDestroyMethod):
     lookup_field = 'item'
 
     def destroy(self, request, *args, **kwargs):
-        instance = get_object_or_404(Favorite,
+        instance = get_object_or_404(Cart,
                                      customer=request.user,
                                      item=kwargs.get('item')
                                      )
