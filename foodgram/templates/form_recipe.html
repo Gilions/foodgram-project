@@ -112,10 +112,9 @@
             </div>
 
             <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
-
             {% for errors in form.non_field_errors %}
-              {% if errors == "Необходимо добавить ингредиенты!"%}
-                <span class="form__error">{{ errors }}</span>
+              {% if errors != "Необходимо выбрать тип блюда!"%}
+                <span class="form__error">{{ errors|escape }}</span>
               {% endif %}
             {% endfor %}
           </div>
@@ -125,7 +124,14 @@
           <div class="form__field-group form__field-group_time">
             {{ form.time_cooking }}
             <label class="form__label">минут</label>
-            <span class="form__error"></span>
+          {% if form.errors %}
+            {% for field in form %}
+              {% for errors in field.errors %}
+                <span class="form__error">{{ errors|escape }}</span>
+              {% endfor %}
+            {% endfor %}
+          {% endif %}
+
           </div>
         </div>
         <div class="form__group">

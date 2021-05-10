@@ -45,7 +45,10 @@ def check(request, form):
     # Check validations fields
     ingredient = False
     tags = False
-    for key in request.POST.keys():
+    for key, value in request.POST.items():
+        if 'valueIngredient' in key and int(value) <= 0:
+            form.add_error(None,
+                           "Количество ингредиента должно быть больше 0.")
         if 'nameIngredient' in key:
             ingredient = True
         if key in TAGS:

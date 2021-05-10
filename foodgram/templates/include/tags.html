@@ -2,7 +2,7 @@
 {% load tags_filters %}
 
 <ul class="tags">
-  {% for tag in tags %}
+  {% for tag in all_tags %}
     <li class="tags__item">
       <a
           id="{{ tag.name }}"

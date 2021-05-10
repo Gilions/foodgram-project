@@ -12,8 +12,9 @@ from .utility import download_pdf, save_recipe, tags_filter
 
 def index(request):
     # The main page of the site.
+    tags = tags_filter(request)
     recipe_list = Recipe.objects.filter(
-        tags__name__in=tags_filter(request)
+        tags__name__in=tags
     ).prefetch_related(
         'tags'
     ).select_related('author').distinct()
@@ -21,7 +22,8 @@ def index(request):
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     context = {
-        'tags': Tag.objects.all(),
+        'tags': tags,
+        'all_tags': Tag.objects.all(),
         'page': page,
         "paginator": paginator
     }
@@ -46,16 +48,18 @@ def follow_index(request):
 @login_required
 def favorite_index(request):
     # The favorite recipe page is displayed.
+    tags = tags_filter(request)
     recipe_list = Recipe.objects.filter(
         favorite__user=request.user,
-        tags__name__in=tags_filter(request)
+        tags__name__in=tags
     ).prefetch_related('tags').select_related('author').distinct()
 
     paginator = Paginator(recipe_list, PAGINATION_PAGE_SIZE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     context = {
-        'tags': Tag.objects.all(),
+        'tags': tags,
+        'all_tags': Tag.objects.all(),
         'page': page,
         "paginator": paginator
     }
@@ -64,16 +68,17 @@ def favorite_index(request):
 
 def author_view(request, username):
     # Authors recipes.
-    tags = Tag.objects.all()
+    tags = tags_filter(request)
     author = get_object_or_404(User, username=username)
     recipe_list = Recipe.objects.filter(
         author=author,
-        tags__name__in=tags_filter(request)
+        tags__name__in=tags
     ).prefetch_related('tags').select_related('author').distinct()
     paginator = Paginator(recipe_list, PAGINATION_PAGE_SIZE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     context = {
+        'all_tags': Tag.objects.all(),
         'tags': tags,
         'author': author,
         'page': page,
