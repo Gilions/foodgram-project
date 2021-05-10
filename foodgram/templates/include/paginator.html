@@ -9,7 +9,7 @@
       {% endif %}
       {% for i in paginator.page_range %}
         {% if items.number == i %}
-          <li class="pagination__item pagination__item_active"><a class="pagination__link link" href="#">{{ i }}</a></li>
+          <li class="pagination__item pagination__item_active"><a class="pagination__link link" href="?page={{ i }}{{ tags|tags_filter }}" >{{ i }}</a></li>
         {% else %}
           <li class="pagination__item"><a class="pagination__link link" href="?page={{ i }}{{ tags|tags_filter }}">{{ i }}</a></li>
         {% endif %}
