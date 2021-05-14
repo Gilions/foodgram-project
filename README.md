@@ -1,7 +1,7 @@
 # Продуктовый помощник
 ![Foodgram](https://github.com/Gilions/foodgram-project/actions/workflows/main.yml/badge.svg)
 
-Сайт доступен по ссылке - http://84.252.142.134/
+Сайт доступен по ссылке - http://84.201.177.174/
 
 Данный проект был создан в рамках дипломного проекта, курсов Yandex Практикум, факультет
 Python разработчик.
