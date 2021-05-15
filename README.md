@@ -9,6 +9,16 @@ Python разработчик.
 Стек технологий:
 Python 3, Django 3.1.7,  REST API, PostgreSQL, Docker, NNGIX, Gunicorn
 
+## Системные трубования
+______
+
+- Python 3.8
+- Django and Django Rest Framework
+- PostgreSQL
+- Gunicorn + Nginx
+- CI/CD: Docker, docker-compose, GitHub Actions
+- Yandex.Cloud
+
 ## Запуск проекта используя Docker compose:
 ____
 MamOS/windows/Linux:
@@ -50,11 +60,6 @@ ______
 Для запуска Django сервера используйте команду
 
 `python manage.py runserver`
-
-## Системные трубования
-______
-
-Для запуска проекта требуется: Python 3, Django 3.1.7, REST API
 
 ## Развитие проекта
 ______
