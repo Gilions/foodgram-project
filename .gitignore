@@ -137,3 +137,6 @@ get_template/
 sent_emails
 
 .pytest_cache
+
+.idea
+.vscode

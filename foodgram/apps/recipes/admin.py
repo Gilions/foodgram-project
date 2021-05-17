@@ -21,5 +21,5 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(Composition)
 class ComponentsAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'unit',)
+    list_display = ('name', 'unit',)
     list_filter = ('name',)
